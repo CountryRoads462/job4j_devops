@@ -13,48 +13,36 @@ pipeline {
                 }
             }
         }
-        parallel {
-            stage('Checkstyle Main') {
-                steps {
-                    script {
-                        sh './gradlew checkstyleMain'
+        stage('Build') {
+            parallel {
+                stage('Checkstyle Main') {
+                    steps {
+                        script {
+                            sh './gradlew checkstyleMain'
+                        }
                     }
                 }
-            }
-            stage('Checkstyle Test') {
-                steps {
-                    script {
-                        sh './gradlew checkstyleTest'
+                stage('Checkstyle Test') {
+                    steps {
+                        script {
+                            sh './gradlew checkstyleTest'
+                        }
                     }
                 }
-            }
-        }
-        stage('Compile') {
-            steps {
-                script {
-                    sh './gradlew compileJava'
-                }
-            }
-        }
-        parallel {
-            stage('Test') {
-                steps {
-                    script {
-                        sh './gradlew test'
+                stage('Build') {
+                    steps {
+                        script {
+                            sh './gradlew compileJava'
+                        }
                     }
                 }
-            }
-            stage('JaCoCo Report') {
-                steps {
-                    script {
-                        sh './gradlew jacocoTestReport'
-                    }
-                }
-            }
-            stage('JaCoCo Verification') {
-                steps {
-                    script {
-                        sh './gradlew jacocoTestCoverageVerification'
+                stage('Test') {
+                    steps {
+                        script {
+                            sh './gradlew test'
+                            sh './gradlew jacocoTestReport'
+                            sh './gradlew jacocoTestCoverageVerification'
+                        }
                     }
                 }
             }
