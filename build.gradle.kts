@@ -4,6 +4,7 @@ plugins {
 	jacoco
 	id("org.springframework.boot") version "3.4.0"
 	id("io.spring.dependency-management") version "1.1.6"
+    id("com.github.spotbugs") version "6.0.26"
 }
 
 group = "ru.job4j.devops"
@@ -60,3 +61,13 @@ tasks.register<Zip>("zipJavaDoc") {
     destinationDirectory.set(layout.buildDirectory.dir("archives")) // Директория, куда будет сохранен архив
 }
 
+tasks.spotbugsMain {
+    reports.create("html") {
+        required = true
+        outputLocation.set(layout.buildDirectory.file("reports/spotbugs/spotbugs.html"))
+    }
+}
+
+tasks.test {
+    finalizedBy(tasks.spotbugsMain)
+}
