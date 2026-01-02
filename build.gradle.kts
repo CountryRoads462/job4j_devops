@@ -92,3 +92,22 @@ tasks.register("checkJarSize") {
         }
     }
 }
+
+tasks.register<Zip>("archiveResources") {
+    group = "custom optimization"
+    description = "Archives the resources folder into a ZIP file"
+
+    val inputDir = file("src/main/resources")
+    val outputDir = layout.buildDirectory.dir("archives")
+
+    inputs.dir(inputDir) // Входные данные для инкрементальной сборки
+    outputs.file(outputDir.map { it.file("resources.zip") }) // Выходной файл
+
+    from(inputDir)
+    destinationDirectory.set(outputDir)
+    archiveFileName.set("resources.zip")
+
+    doLast {
+        println("Resources archived successfully at ${outputDir.get().asFile.absolutePath}")
+    }
+}
