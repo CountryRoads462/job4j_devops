@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'agent2' }
+    agent { label 'agent-jdk21' }
 
     tools {
         git 'Default'
@@ -8,43 +8,32 @@ pipeline {
     stages {
         stage('Prepare Environment') {
             steps {
-                script {
-                    sh 'chmod +x ./gradlew'
-                }
+                sh 'chmod +x ./gradlew'
             }
         }
-        stage('Build') {
-            parallel {
-                stage('Checkstyle Main') {
-                    steps {
-                        script {
-                            sh './gradlew checkstyleMain'
-                        }
-                    }
-                }
-                stage('Checkstyle Test') {
-                    steps {
-                        script {
-                            sh './gradlew checkstyleTest'
-                        }
-                    }
-                }
-                stage('Build') {
-                    steps {
-                        script {
-                            sh './gradlew compileJava'
-                        }
-                    }
-                }
-                stage('Test') {
-                    steps {
-                        script {
-                            sh './gradlew test'
-                            sh './gradlew jacocoTestReport'
-                            sh './gradlew jacocoTestCoverageVerification'
-                        }
-                    }
-                }
+        stage('Check') {
+            steps {
+                sh './gradlew check'
+            }
+        }
+        stage('Package') {
+            steps {
+                sh './gradlew build'
+            }
+        }
+        stage('JaCoCo Report') {
+            steps {
+                sh './gradlew jacocoTestReport'
+            }
+        }
+        stage('JaCoCo Verification') {
+            steps {
+                sh './gradlew jacocoTestCoverageVerification'
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t job4j_devops .'
             }
         }
     }
@@ -52,10 +41,12 @@ pipeline {
     post {
         always {
             script {
-                def buildInfo = "Build number: ${currentBuild.number}\n" +
-                                "Build status: ${currentBuild.currentResult}\n" +
-                                "Started at: ${new Date(currentBuild.startTimeInMillis)}\n" +
-                                "Duration so far: ${currentBuild.durationString}"
+                def buildInfo = """
+                    Build number: ${currentBuild.number}
+                    Build status: ${currentBuild.currentResult}
+                    Started at: ${new Date(currentBuild.startTimeInMillis)}
+                    Duration: ${currentBuild.durationString}
+                """
                 telegramSend(message: buildInfo)
             }
         }
