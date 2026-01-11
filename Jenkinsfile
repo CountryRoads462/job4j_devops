@@ -33,7 +33,11 @@ pipeline {
         }
         stage('Docker Build') {
             steps {
-                sh 'docker build -t job4j_devops .'
+                sh '''
+                  whoami
+                  docker ps
+                  docker build -t job4j_devops .
+                '''
             }
         }
     }
