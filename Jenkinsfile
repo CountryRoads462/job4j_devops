@@ -35,6 +35,7 @@ pipeline {
             steps {
                 sh '''
                   whoami
+                  id
                   docker ps
                   docker build -t job4j_devops .
                 '''
