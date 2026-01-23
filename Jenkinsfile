@@ -11,26 +11,35 @@ pipeline {
                 sh 'chmod +x ./gradlew'
             }
         }
-        stage('Check') {
-            steps {
-                sh './gradlew check'
+
+        stage('Check + JaCoCo Report (Parallel)') {
+            parallel {
+                stage('Check') {
+                    steps {
+                        sh './gradlew check'
+                    }
+                }
+
+                stage('JaCoCo Report') {
+                    steps {
+                        sh './gradlew jacocoTestReport'
+                    }
+                }
             }
         }
+
         stage('Package') {
             steps {
                 sh './gradlew build'
             }
         }
-        stage('JaCoCo Report') {
-            steps {
-                sh './gradlew jacocoTestReport'
-            }
-        }
+
         stage('JaCoCo Verification') {
             steps {
                 sh './gradlew jacocoTestCoverageVerification'
             }
         }
+
         stage('Docker Build') {
             steps {
                 sh '''
