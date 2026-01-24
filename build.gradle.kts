@@ -1,4 +1,5 @@
 plugins {
+    application
     checkstyle
     java
     jacoco
@@ -31,6 +32,10 @@ tasks.jacocoTestCoverageVerification {
             }
         }
     }
+}
+
+application {
+    mainClass.set("ru/job4j/devops/CalcApplication.java")
 }
 
 repositories {
