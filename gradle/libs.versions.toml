@@ -7,14 +7,25 @@ junit-platform-launcher = "1.10.0"
 liquibase = "4.30.0"
 postgresql = "42.7.4"
 
+jaxb-api = "2.3.1"
+logback = "1.5.15"
+picocli = "4.6.1"
+
 [libraries]
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "spring-boot" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring-boot" }
+
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-launcher" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj-core" }
 
-spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring-boot" }
 liquibase-core = { module = "org.liquibase:liquibase-core", version.ref = "liquibase" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+
+jaxb-api = { module = "javax.xml.bind:jaxb-api", version.ref = "jaxb-api" }
+logback-core = { module = "ch.qos.logback:logback-core", version.ref = "logback" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+picocli = { module = "info.picocli:picocli", version.ref = "picocli" }

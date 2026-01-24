@@ -5,6 +5,7 @@ plugins {
     id("org.springframework.boot") version "3.4.0"
     id("io.spring.dependency-management") version "1.1.6"
     id("com.github.spotbugs") version "6.0.26"
+    id("org.liquibase.gradle") version "3.0.1"
 }
 
 group = "ru.job4j.devops"
@@ -36,6 +37,15 @@ repositories {
     mavenCentral()
 }
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.liquibase:liquibase-core:4.30.0")
+    }
+}
+
 dependencies {
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
@@ -49,6 +59,13 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj.core)
+
+    liquibaseRuntime(libs.liquibase.core)
+    liquibaseRuntime(libs.postgresql)
+    liquibaseRuntime(libs.jaxb.api)
+    liquibaseRuntime(libs.logback.core)
+    liquibaseRuntime(libs.logback.classic)
+    liquibaseRuntime(libs.picocli)
 }
 
 tasks.withType<Test> {
@@ -56,14 +73,14 @@ tasks.withType<Test> {
 }
 
 tasks.register<Zip>("zipJavaDoc") {
-    group = "documentation" // Группа, в которой будет отображаться задача
+    group = "documentation"
     description = "Packs the generated Javadoc into a zip archive"
 
-    dependsOn("javadoc") // Указываем, что задача зависит от выполнения javadoc
+    dependsOn("javadoc")
 
-    from("build/docs/javadoc") // Исходная папка для упаковки
-    archiveFileName.set("javadoc.zip") // Имя создаваемого архива
-    destinationDirectory.set(layout.buildDirectory.dir("archives")) // Директория, куда будет сохранен архив
+    from("build/docs/javadoc")
+    archiveFileName.set("javadoc.zip")
+    destinationDirectory.set(layout.buildDirectory.dir("archives"))
 }
 
 tasks.spotbugsMain {
@@ -81,12 +98,12 @@ tasks.register("checkJarSize") {
     group = "verification"
     description = "Checks the size of the generated JAR file."
 
-    dependsOn("jar") // Задача зависит от сборки JAR
+    dependsOn("jar")
 
     doLast {
-        val jarFile = file("build/libs/${project.name}-${project.version}.jar") // Путь к JAR-файлу
+        val jarFile = file("build/libs/${project.name}-${project.version}.jar")
         if (jarFile.exists()) {
-            val sizeInMB = jarFile.length() / (1024 * 1024) // Размер в мегабайтах
+            val sizeInMB = jarFile.length() / (1024 * 1024)
             if (sizeInMB > 5) {
                 println("WARNING: JAR file exceeds the size limit of 5 MB. Current size: ${sizeInMB} MB")
             } else {
@@ -105,8 +122,8 @@ tasks.register<Zip>("archiveResources") {
     val inputDir = file("src/main/resources")
     val outputDir = layout.buildDirectory.dir("archives")
 
-    inputs.dir(inputDir) // Входные данные для инкрементальной сборки
-    outputs.file(outputDir.map { it.file("resources.zip") }) // Выходной файл
+    inputs.dir(inputDir)
+    outputs.file(outputDir.map { it.file("resources.zip") })
 
     from(inputDir)
     destinationDirectory.set(outputDir)
