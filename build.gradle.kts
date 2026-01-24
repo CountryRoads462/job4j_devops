@@ -1,5 +1,4 @@
 plugins {
-    application
     checkstyle
     java
     jacoco
@@ -7,6 +6,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.6"
     id("com.github.spotbugs") version "6.0.26"
     id("org.liquibase.gradle") version "3.0.1"
+    id("application")
 }
 
 group = "ru.job4j.devops"
@@ -35,7 +35,7 @@ tasks.jacocoTestCoverageVerification {
 }
 
 application {
-    mainClass.set("ru/job4j/devops/CalcApplication.java")
+    mainClass.set("ru.job4j.devops.CalcApplication")
 }
 
 repositories {
