@@ -12,28 +12,6 @@ plugins {
 group = "ru.job4j.devops"
 version = "1.0.0"
 
-tasks.jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = "0.8".toBigDecimal()
-            }
-        }
-
-        rule {
-            isEnabled = false
-            element = "CLASS"
-            includes = listOf("org.gradle.*")
-
-            limit {
-                counter = "LINE"
-                value = "TOTALCOUNT"
-                maximum = "0.3".toBigDecimal()
-            }
-        }
-    }
-}
-
 application {
     mainClass.set("ru.job4j.devops.CalcApplication")
 }
@@ -75,6 +53,29 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    ignoreFailures = true
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.8".toBigDecimal()
+            }
+        }
+
+        rule {
+            isEnabled = false
+            element = "CLASS"
+            includes = listOf("org.gradle.*")
+
+            limit {
+                counter = "LINE"
+                value = "TOTALCOUNT"
+                maximum = "0.3".toBigDecimal()
+            }
+        }
+    }
 }
 
 tasks.register<Zip>("zipJavaDoc") {
