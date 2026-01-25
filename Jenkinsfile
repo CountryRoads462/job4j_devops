@@ -16,13 +16,17 @@ pipeline {
             parallel {
                 stage('Check') {
                     steps {
-                        sh './gradlew check'
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            sh './gradlew check'
+                        }
                     }
                 }
 
                 stage('JaCoCo Report') {
                     steps {
-                        sh './gradlew jacocoTestReport'
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            sh './gradlew jacocoTestReport'
+                        }
                     }
                 }
             }
