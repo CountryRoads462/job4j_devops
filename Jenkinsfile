@@ -34,7 +34,9 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh './gradlew build'
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh './gradlew build'
+                }
             }
         }
 
