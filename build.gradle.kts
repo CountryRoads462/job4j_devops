@@ -56,6 +56,14 @@ tasks.withType<Test> {
     ignoreFailures = true
 }
 
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+
+    onlyIf {
+        file("$buildDir/jacoco/test.exec").exists()
+    }
+}
+
 tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {

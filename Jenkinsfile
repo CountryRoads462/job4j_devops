@@ -22,7 +22,9 @@ pipeline {
 
                 stage('JaCoCo Report') {
                     steps {
-                        sh './gradlew jacocoTestReport'
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            sh './gradlew jacocoTestReport'
+                        }
                     }
                 }
             }
