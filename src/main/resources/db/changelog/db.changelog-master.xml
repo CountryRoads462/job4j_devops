@@ -8,4 +8,7 @@
     <include file="changeset/001_ddl_create_tables.sql"
              author="Andrei Kamagin"
              relativeToChangelogFile="true"/>
+    <include file="changeset/002_ddl_add_new_columns_to_users_table.sql"
+             author="Andrei Kamagin"
+             relativeToChangelogFile="true"/>
 </databaseChangeLog>
