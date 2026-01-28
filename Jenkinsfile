@@ -7,7 +7,6 @@ pipeline {
 
     options {
         timestamps()
-        ansiColor('xterm')
         skipDefaultCheckout()
     }
 
@@ -33,7 +32,7 @@ pipeline {
                             try {
                                 sh './gradlew check'
                             } catch (err) {
-                                unstable('Unit / integration tests failed')
+                                unstable('Tests failed')
                             }
                         }
                     }
@@ -59,7 +58,7 @@ pipeline {
                     try {
                         sh './gradlew build -x test'
                     } catch (err) {
-                        error('Packaging failed – this is a real failure')
+                        error('Packaging failed')
                     }
                 }
             }
@@ -94,13 +93,12 @@ pipeline {
                             '🔴'
 
                 def message = """
-${emoji} *Build ${currentBuild.currentResult}*
+${emoji} Build ${currentBuild.currentResult}
 
-• Job: ${env.JOB_NAME}
-• Build: #${currentBuild.number}
-• Started: ${new Date(currentBuild.startTimeInMillis)}
-• Duration: ${currentBuild.durationString}
-• URL: ${env.BUILD_URL}
+Job: ${env.JOB_NAME}
+Build: #${currentBuild.number}
+Duration: ${currentBuild.durationString}
+URL: ${env.BUILD_URL}
 """
                 telegramSend(message: message)
             }
