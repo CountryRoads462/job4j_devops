@@ -56,6 +56,21 @@ tasks.withType<Test> {
     ignoreFailures = true
 }
 
+liquibase {
+    activities.register("main") {
+        this.arguments = mapOf(
+            "logLevel"       to "info",
+            "url"            to "jdbc:postgresql://localhost:5432/job4j_devops",
+            "username"       to "postgres",
+            "password"       to "postgres",
+            "classpath"      to "src/main/resources",
+            "changelogFile"  to "db/changelog/db.changelog-master.xml"
+        )
+    }
+    runList = "main"
+}
+
+
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
 
