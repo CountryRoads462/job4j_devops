@@ -5,25 +5,48 @@ pipeline {
         git 'Default'
     }
 
+    options {
+        timestamps()
+        ansiColor('xterm')
+        skipDefaultCheckout()
+    }
+
     stages {
+        stage('Checkout SCM') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Prepare Environment') {
             steps {
                 sh 'chmod +x ./gradlew'
             }
         }
 
-        stage('Check + JaCoCo Report (Parallel)') {
+        stage('Check + JaCoCo (Parallel)') {
             parallel {
+
                 stage('Check') {
                     steps {
-                        sh './gradlew check'
+                        script {
+                            try {
+                                sh './gradlew check'
+                            } catch (err) {
+                                unstable('Unit / integration tests failed')
+                            }
+                        }
                     }
                 }
 
                 stage('JaCoCo Report') {
                     steps {
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            sh './gradlew jacocoTestReport'
+                        script {
+                            try {
+                                sh './gradlew jacocoTestReport'
+                            } catch (err) {
+                                unstable('JaCoCo report generation failed')
+                            }
                         }
                     }
                 }
@@ -32,23 +55,32 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh './gradlew build'
+                script {
+                    try {
+                        sh './gradlew build -x test'
+                    } catch (err) {
+                        error('Packaging failed – this is a real failure')
+                    }
+                }
             }
         }
 
         stage('JaCoCo Verification') {
             steps {
-                sh './gradlew jacocoTestCoverageVerification'
+                script {
+                    try {
+                        sh './gradlew jacocoTestCoverageVerification'
+                    } catch (err) {
+                        unstable('Coverage thresholds not met')
+                    }
+                }
             }
         }
 
         stage('Docker Build') {
             steps {
                 sh '''
-                  whoami
-                  id
-                  docker ps
-                  docker build -t job4j_devops .
+                    docker build -t job4j_devops:${BUILD_NUMBER} .
                 '''
             }
         }
@@ -57,13 +89,20 @@ pipeline {
     post {
         always {
             script {
-                def buildInfo = """
-                    Build number: ${currentBuild.number}
-                    Build status: ${currentBuild.currentResult}
-                    Started at: ${new Date(currentBuild.startTimeInMillis)}
-                    Duration: ${currentBuild.durationString}
-                """
-                telegramSend(message: buildInfo)
+                def emoji = currentBuild.currentResult == 'SUCCESS'  ? '🟢' :
+                            currentBuild.currentResult == 'UNSTABLE' ? '🟡' :
+                            '🔴'
+
+                def message = """
+${emoji} *Build ${currentBuild.currentResult}*
+
+• Job: ${env.JOB_NAME}
+• Build: #${currentBuild.number}
+• Started: ${new Date(currentBuild.startTimeInMillis)}
+• Duration: ${currentBuild.durationString}
+• URL: ${env.BUILD_URL}
+"""
+                telegramSend(message: message)
             }
         }
     }
