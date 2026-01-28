@@ -88,19 +88,13 @@ pipeline {
     post {
         always {
             script {
-                def emoji = currentBuild.currentResult == 'SUCCESS'  ? '🟢' :
-                            currentBuild.currentResult == 'UNSTABLE' ? '🟡' :
-                            '🔴'
-
-                def message = """
-${emoji} Build ${currentBuild.currentResult}
-
-Job: ${env.JOB_NAME}
-Build: #${currentBuild.number}
-Duration: ${currentBuild.durationString}
-URL: ${env.BUILD_URL}
-"""
-                telegramSend(message: message)
+                def buildInfo = """
+    Build number: ${currentBuild.number}
+    Build status: ${currentBuild.currentResult}
+    Started at: ${new Date(currentBuild.startTimeInMillis)}
+    Duration: ${currentBuild.durationString}
+    """
+                telegramSend(message: buildInfo)
             }
         }
     }
