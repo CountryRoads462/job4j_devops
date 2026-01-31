@@ -7,6 +7,7 @@ plugins {
     id("com.github.spotbugs") version "6.0.26"
     id("org.liquibase.gradle") version "3.0.1"
     id("application")
+    id("co.uzzu.dotenv.gradle") version "4.0.0"
 }
 
 group = "ru.job4j.devops"
@@ -58,16 +59,15 @@ tasks.withType<Test> {
 
 liquibase {
     activities.register("main") {
-        this.arguments = mapOf(
+        arguments = mapOf(
             "logLevel"       to "info",
-            "url"            to "jdbc:postgresql://localhost:5432/job4j_devops",
-            "username"       to "postgres",
-            "password"       to "postgres",
-            "classpath"      to "src/main/resources",
-            "changelogFile"  to "db/changelog/db.changelog-master.xml"
+            "url"            to env.DB_URL.value,
+            "username"       to env.DB_USERNAME.value,
+            "password"       to env.DB_PASSWORD.value,
+            "classpath"     to "src/main/resources",
+            "changelogFile" to "db/changelog/db.changelog-master.xml"
         )
     }
-    runList = "main"
 }
 
 
